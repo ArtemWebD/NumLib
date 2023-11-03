@@ -3,6 +3,7 @@
 #include "Number.h"
 #include "Fraction.h"
 #include "Decimal.h"
+#include "IrrationalNumber.h"
 
 using namespace std;
 
@@ -129,4 +130,33 @@ int main()
 
     divideDecimal(&decimal, createNumber(2));
     printDecimal(decimal);
+
+    cout << "\n\nStruct IrrationalNumber" << endl;
+
+    cout << "printIrrationalNumber(): ";
+
+    IrrationalNumber iNumber = createIrrationalNumber(1.235234245);
+
+    printIrrationalNumber(iNumber);
+
+    cout << "addIrrationalNumber(0,7856456): ";
+
+    IrrationalNumber iSumNumber = createIrrationalNumber(0.7856456);
+
+    addIrrationalNumber(&iNumber, iSumNumber);
+    printIrrationalNumber(iNumber);
+
+    cout << "multiplyIrrationalNumber(0,7856456): ";
+
+    IrrationalNumber iFactor = createIrrationalNumber(0.7856456);
+
+    multiplyIrrationalNumber(&iNumber, iFactor);
+    printIrrationalNumber(iNumber);
+
+    cout << "divideIrrationalNumber(0,7856456): ";
+
+    IrrationalNumber iDivider = createIrrationalNumber(0.7856456);
+
+    divideIrrationalNumber(&iNumber, iDivider);
+    printIrrationalNumber(iNumber);
 }
