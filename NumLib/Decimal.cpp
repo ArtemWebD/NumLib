@@ -2,134 +2,132 @@
 #include "Decimal.h"
 #include <iostream>
 
-void setSign(Decimal* decimal)
-{
-	if (decimal->value < 0)
-	{
-		decimal->sign = '-';
-	}
-	else if (decimal->value > 0)
-	{
-		decimal->sign = '+';
-	}
-	else
-	{
-		decimal->sign = '\0';
-	}
-}
+class Decimal {
+public:
+    Number integer;
+    Number fractional;
+    char sign;
+    float value;
 
-void separateDecimal(Decimal* decimal)
-{
-	int temp = decimal->value;
-	float n;
+    void setSign() {
+        if (value < 0) {
+            sign = '-';
+        }
+        else if (value > 0) {
+            sign = '+';
+        }
+        else {
+            sign = '\0';
+        }
+    }
 
-	decimal->integer = createNumber(temp);
-	decimal->fractional = createNumber(modf(decimal->value, &n));
-}
+    void separate() {
+        int temp = static_cast<int>(value);
+        float n;
+        integer = createNumber(temp);
+        fractional = createNumber(modf(value, &n));
+    }
 
-Decimal createDecimal(Number integer, Number fractional)
-{
-	Decimal decimal;
+    static Decimal createDecimal(Number integer, Number fractional) {
+        Decimal decimal;
+        decimal.sign = '\0';
 
-	decimal.sign = '\0';
+        if (integer.sign == '\0') {
+            decimal.sign = fractional.sign;
+        }
+        else {
+            decimal.sign = integer.sign;
+        }
 
-	if (integer.sign == '\0')
-	{
-		decimal.sign = fractional.sign;
-	}
-	else
-	{
-		decimal.sign = integer.sign;
-	}
+        absNumber(integer);
+        absNumber(fractional);
 
-	absNumber(&integer);
-	absNumber(&fractional);
+        decimal.integer = integer;
+        decimal.fractional = fractional;
 
-	decimal.integer = integer;
-	decimal.fractional = fractional;
+        decimal.value = integer.value + fractional.value / 10.0;
 
-	decimal.value = integer.value + fractional.value / 10.0;
+        return decimal;
+    }
 
-	return decimal;
-}
+    static Decimal createDecimal(float value) {
+        Decimal decimal;
+        decimal.sign = '\0';
+        decimal.value = value;
 
-Decimal createDecimal(float value)
-{
-	Decimal decimal;
+        if (value < 0) {
+            decimal.sign = '-';
+        }
+        else if (value > 0) {
+            decimal.sign = '+';
+        }
 
-	decimal.sign = '\0';
-	decimal.value = value;
+        decimal.separate();
 
-	if (value < 0)
-	{
-		decimal.sign = '-';
-	}
-	else if (value > 0)
-	{
-		decimal.sign = '+';
-	}
+        return decimal;
+    }
 
-	separateDecimal(&decimal);
+    void print() {
+        std::cout << value << std::endl;
+    }
 
-	return decimal;
-}
+    void add(Decimal sumDecimal) {
+        value += sumDecimal.value;
+        setSign();
+        separate();
+    }
 
-void printDecimal(Decimal decimal)
-{
-	std::cout << decimal.value << std::endl;
-}
+    void add(Number number) {
+        value += number.value;
+        setSign();
+        separate();
+    }
 
-void addDecimal(Decimal* decimal, Decimal sumDecimal)
-{
-	decimal->value += sumDecimal.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    void multiply(Decimal factor) {
+        value *= factor.value;
+        setSign();
+        separate();
+    }
 
-void addDecimal(Decimal* decimal, Number number)
-{
-	decimal->value += number.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    void multiply(Number factor) {
+        value *= factor.value;
+        setSign();
+        separate();
+    }
 
-void multiplyDecimal(Decimal* decimal, Decimal factor)
-{
-	decimal->value *= factor.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    void divide(Decimal divider) {
+        value /= divider.value;
+        setSign();
+        separate();
+    }
 
-void multiplyDecimal(Decimal* decimal, Number factor)
-{
-	decimal->value *= factor.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    void divide(Number divider) {
+        value /= divider.value;
+        setSign();
+        separate();
+    }
 
-void divideDecimal(Decimal* decimal, Decimal divider)
-{
-	decimal->value /= divider.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    char getSign() {
+        return sign;
+    }
 
-void divideDecimal(Decimal* decimal, Number divider)
-{
-	decimal->value /= divider.value;
-	setSign(decimal);
-	separateDecimal(decimal);
-}
+    void abs() {
+        value = std::abs(value);
+        absNumber(integer);
+        absNumber(fractional);
+        sign = '+';
+    }
 
-char getDecimalSign(Decimal decimal)
-{
-	return decimal.sign;
-}
+private:
+    static Number createNumber(int value) {
+        Number number;
+        number.value = static_cast<float>(value);
+        number.sign = (value < 0) ? '-' : '\0';
+        return number;
+    }
 
-void absDecimal(Decimal* decimal)
-{
-	decimal->value = abs(decimal->value);
-	absNumber(&decimal->integer);
-	absNumber(&decimal->fractional);
-	decimal->sign = '+';
-}
+    static void absNumber(Number& number) {
+        number.value = std::abs(number.value);
+        number.sign = '\0';
+    }
+};

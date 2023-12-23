@@ -1,63 +1,43 @@
 #include "Number.h"
 #include <iostream>
 
-void setSign(Number *number)
+Number::Number(int val)
 {
-	if (number->value > 0)
-	{
-		number->sign = '+';
-	}
-	else if (number->value < 0)
-	{
-		number->sign = '-';
-	}
-	else
-	{
-		number->sign = '\0';
-	}
+	value = val;
+
+	setSign();
 }
 
-Number createNumber(int value)
+void Number::printNumber()
 {
-	Number number;
-
-	number.value = value;
-
-	setSign(&number);
-
-	return number;
+	std::cout << value << std::endl;
 }
 
-void printNumber(Number number)
+void Number::addNumber(Number sumNumber)
 {
-	std::cout << number.value << std::endl;
+	value += sumNumber.value;
+	setSign();
 }
 
-void addNumber(Number *number, Number sumNumber)
+void Number::multiplyNumber(Number factor)
 {
-	number->value += sumNumber.value;
-	setSign(number);
+	value *= factor.value;
+	setSign();
 }
 
-void multiplyNumber(Number* number, Number factor)
+void Number::divideNumber(Number divider)
 {
-	number->value *= factor.value;
-	setSign(number);
+	value /= divider.value;
+	setSign();
 }
 
-void divideNumber(Number* number, Number divider)
+char Number::getSign()
 {
-	number->value /= divider.value;
-	setSign(number);
+	return sign;
 }
 
-char getSign(Number number)
+void Number::absNumber()
 {
-	return number.sign;
-}
-
-void absNumber(Number *number)
-{
-	number->value = abs(number->value);
-	setSign(number);
+	value = abs(value);
+	setSign();
 }

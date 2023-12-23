@@ -4,98 +4,85 @@
 #include <iostream>
 #include <string>
 
-void setSign(IrrationalNumber* number)
-{
-	if (number->value > 0)
-	{
-		number->sign = '+';
-	}
-	else if (number->value < 0)
-	{
-		number->sign = '-';
-	}
-	else
-	{
-		number->sign = '\0';
-	}
-}
+class IrrationalNumber {
+public:
+    float value;
+    char sign;
 
-IrrationalNumber createIrrationalNumber(float value)
-{
-	IrrationalNumber decimal;
+    void setSign() {
+        if (value > 0) {
+            sign = '+';
+        }
+        else if (value < 0) {
+            sign = '-';
+        }
+        else {
+            sign = '\0';
+        }
+    }
 
-	decimal.value = value;
-	setSign(&decimal);
+    static IrrationalNumber createIrrationalNumber(float value) {
+        IrrationalNumber irrationalNumber;
+        irrationalNumber.value = value;
+        irrationalNumber.setSign();
+        return irrationalNumber;
+    }
 
-	return decimal;
-}
+    void print() const {
+        std::cout << value << "..." << std::endl;
+    }
 
-void printIrrationalNumber(IrrationalNumber number)
-{
-	std::cout << number.value << "..." << std::endl;
-}
+    void add(const IrrationalNumber& sumNumber) {
+        value += sumNumber.value;
+        setSign();
+    }
 
-void addIrrationalNumber(IrrationalNumber* number, IrrationalNumber sumNumber)
-{
-	number->value += sumNumber.value;
-	setSign(number);
-}
+    void add(const Number& sumNumber) {
+        value += sumNumber.value;
+        setSign();
+    }
 
-void addIrrationalNumber(IrrationalNumber* number, Decimal sumDecimal)
-{
-	number->value += sumDecimal.value;
-	setSign(number);
-}
+    void add(float sumValue) {
+        value += sumValue;
+        setSign();
+    }
 
-void addIrrationalNumber(IrrationalNumber* number, Number sumNumber)
-{
-	number->value += sumNumber.value;
-	setSign(number);
-}
+    void multiply(const IrrationalNumber& factor) {
+        value *= factor.value;
+        setSign();
+    }
 
-void multiplyIrrationalNumber(IrrationalNumber* number, IrrationalNumber factor)
-{
-	number->value *= factor.value;
-	setSign(number);
-}
+    void multiply(const Number& factor) {
+        value *= factor.value;
+        setSign();
+    }
 
-void multiplyIrrationalNumber(IrrationalNumber* number, Decimal factor)
-{
-	number->value *= factor.value;
-	setSign(number);
-}
+    void multiply(float factor) {
+        value *= factor;
+        setSign();
+    }
 
-void multiplyIrrationalNumber(IrrationalNumber* number, Number factor)
-{
-	number->value *= factor.value;
-	setSign(number);
-}
+    void divide(const IrrationalNumber& divider) {
+        value /= divider.value;
+        setSign();
+    }
 
-void divideIrrationalNumber(IrrationalNumber* number, IrrationalNumber divider)
-{
-	number->value /= divider.value;
-	setSign(number);
-}
+    void divide(const Number& divider) {
+        value /= divider.value;
+        setSign();
+    }
 
-void divideIrrationalNumber(IrrationalNumber* number, Decimal divider)
-{
-	number->value /= divider.value;
-	setSign(number);
-}
+    void divide(float divider) {
+        value /= divider;
+        setSign();
+    }
 
-void divideIrrationalNumber(IrrationalNumber* number, Number divider)
-{
-	number->value /= divider.value;
-	setSign(number);
-}
+    char getSign() const {
+        return sign;
+    }
 
-char getIrrationalNumberSign(IrrationalNumber number)
-{
-	return number.sign;
-}
-
-void absIrrationalNumber(IrrationalNumber* number)
-{
-	number->value = abs(number->value);
-	number->sign = '+';
-}
+    void abs() {
+        value = std::abs(value);
+        sign = '+';
+    }
+};

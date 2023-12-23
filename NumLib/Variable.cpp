@@ -5,43 +5,39 @@
 #include "IrrationalNumber.h"
 #include <math.h>
 
-Variable createVariable()
-{
-	Variable variable;
-	return variable;
-}
+class Variable {
+public:
+    float value;
+    char sign;
 
-void setVariable(Variable* variable, Number number)
-{
-	variable->value = number.value;
-	variable->sign = number.sign;
-}
+    Variable() : value(0), sign('\0') {}
 
-void setVariable(Variable* variable, Decimal number)
-{
-	variable->value = number.value;
-	variable->sign = number.sign;
-}
+    void setVariable(const Number& number) {
+        value = number.value;
+        sign = number.sign;
+    }
 
-void setVariable(Variable* variable, Fraction number)
-{
-	variable->value = number.value;
-	variable->sign = number.sign;
-}
+    void setVariable(const Decimal& number) {
+        value = number.value;
+        sign = number.sign;
+    }
 
-void setVariable(Variable* variable, IrrationalNumber number)
-{
-	variable->value = number.value;
-	variable->sign = number.sign;
-}
+    void setVariable(const Fraction& number) {
+        value = number.value;
+        sign = number.sign;
+    }
 
-char getSign(Variable number)
-{
-	return number.sign;
-}
+    void setVariable(const IrrationalNumber& number) {
+        value = number.value;
+        sign = number.sign;
+    }
 
-void absVariable(Variable* number)
-{
-	number->sign = '+';
-	number->value = abs(number->value);
-}
+    char getSign() const {
+        return sign;
+    }
+
+    void absVariable() {
+        sign = '+';
+        value = std::abs(value);
+    }
+};

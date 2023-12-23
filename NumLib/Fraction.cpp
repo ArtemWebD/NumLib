@@ -2,175 +2,183 @@
 #include "Fraction.h"
 #include <iostream>
 
-void setSign(Fraction* number)
-{
-	if (number->value > 0)
-	{
-		number->sign = '+';
-	}
-	else if (number->value < 0)
-	{
-		number->sign = '-';
-	}
-	else
-	{
-		number->sign = '\0';
-	}
-}
+class Fraction {
+public:
+    Number numeric;
+    Number denominator;
+    char sign;
+    double value;
 
-int getDivider(int a, int b)
-{
-	if (b == 0)
-	{
-		return a;
-	}
+    void setSign() {
+        if (value > 0) {
+            sign = '+';
+        }
+        else if (value < 0) {
+            sign = '-';
+        }
+        else {
+            sign = '\0';
+        }
+    }
 
-	return getDivider(b, a % b);
-}
+    int getDivider(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return getDivider(b, a % b);
+    }
 
-int getMax(Fraction fraction)
-{
-	if (fraction.value < 1)
-	{
-		return fraction.denominator.value;
-	}
+    int getMax() {
+        if (value < 1) {
+            return denominator.value;
+        }
+        return numeric.value;
+    }
 
-	return fraction.numeric.value;
-}
+    int getMin() {
+        if (value < 1) {
+            return numeric.value;
+        }
+        return denominator.value;
+    }
 
-int getMin(Fraction fraction)
-{
-	if (fraction.value < 1)
-	{
-		return fraction.numeric.value;
-	}
+    void reduce() {
+        int maxDivider = getDivider(getMax(), getMin());
+        numeric.value /= maxDivider;
+        denominator.value /= maxDivider;
+    }
 
-	return fraction.denominator.value;
-}
+    static Fraction createFraction(Number numeric, Number denominator) {
+        Fraction fraction;
+        fraction.value = numeric.value * 1.0 / denominator.value;
+        fraction.numeric = numeric;
+        fraction.denominator = denominator;
+        fraction.setSign();
+        return fraction;
+    }
 
-void reduceFraction(Fraction* fraction)
-{
-	int maxDivider = getDivider(getMax(*fraction), getMin(*fraction));
+    static Fraction createFraction(Number value) {
+        return createFraction(value, value);
+    }
 
-	fraction->numeric.value /= maxDivider;
-	fraction->denominator.value /= maxDivider;
-}
+    void print() {
+        char sign;
+        if (this->sign == '-') {
+            sign = '-';
+        }
+        else {
+            sign = '\0';
+        }
+        std::cout << sign << std::abs(numeric.value) << "/" << std::abs(denominator.value) << std::endl;
+    }
 
-Fraction createFraction(Number numeric, Number denominator)
-{
-	Fraction fraction;
+    void add(Number number) {
+        Fraction temp = createFraction(number, { 1, '\0' });
+        add(temp);
+    }
 
-	fraction.value = numeric.value * 1.0 / denominator.value;
+    void add(Fraction sumFraction) {
+        Fraction temp = sumFraction;
+        multiplyNumber(numeric, temp.denominator);
+        multiplyNumber(temp.numeric, denominator);
+        multiplyNumber(denominator, temp.denominator);
 
-	absNumber(&numeric);
-	absNumber(&denominator);
+        if (sign == '-') {
+            numeric.sign = sign;
+            numeric.value *= -1;
+        }
 
-	fraction.numeric = numeric;
-	fraction.denominator = denominator;
+        if (temp.sign == '-') {
+            temp.numeric.sign = sumFraction.sign;
+            temp.numeric.value *= -1;
+        }
 
-	setSign(&fraction);
+        addNumber(numeric, temp.numeric);
 
-	return fraction;
-}
+        reduce();
 
-Fraction createFraction(Number value)
-{
-	return createFraction(value, value);
-}
+        value = numeric.value * 1.0 / denominator.value;
+        absNumber(numeric);
+        setSign();
+    }
 
-void printFraction(Fraction fraction)
-{
-	char sign;
+    void multiply(Fraction factor) {
+        multiplyNumber(numeric, factor.numeric);
+        multiplyNumber(denominator, factor.denominator);
+        reduce();
+        value *= factor.value;
+        setSign();
+    }
 
-	if (fraction.sign == '-')
-	{
-		sign = '-';
-	}
-	else
-	{
-		sign = '\0';
-	}
+    void multiply(Number factor) {
+        Fraction temp = createFraction(factor, { 1, '\0' });
+        multiply(temp);
+    }
 
-	std::cout << sign << abs(fraction.numeric.value) << "/" << abs(fraction.denominator.value) << std::endl;
-}
+    void divide(Fraction divider) {
+        Number temp = divider.numeric;
+        divider.numeric = divider.denominator;
+        divider.denominator = temp;
+        multiply(divider);
+    }
 
-void addFraction(Fraction* fraction, Number number)
-{
-	Fraction temp = createFraction(number, createNumber(1));
-	addFraction(fraction, temp);
-}
+    void divide(Number divider) {
+        Fraction temp = createFraction(divider, { 1, '\0' });
+        divide(temp);
+    }
 
-void addFraction(Fraction *fraction, Fraction sumFraction)
-{
-	Fraction temp = sumFraction;
+    char getSign() {
+        return sign;
+    }
 
-	multiplyNumber(&fraction->numeric, temp.denominator);
-	multiplyNumber(&temp.numeric, fraction->denominator);
-	
-	multiplyNumber(&fraction->denominator, temp.denominator);
+    void abs() {
+        value = std::abs(value);
+        absNumber(numeric);
+        absNumber(denominator);
+        setSign();
+    }
 
-	if (fraction->sign == '-')
-	{
-		fraction->numeric.sign = fraction->sign;
-		fraction->numeric.value *= -1;
-	}
+private:
+    void absNumber(Number& number) {
+        number.value = std::abs(number.value);
+        number.sign = '\0';
+    }
 
-	if (temp.sign == '-')
-	{
-		temp.numeric.sign = sumFraction.sign;
-		temp.numeric.value *= -1;
-	}
+    void addNumber(Number& a, const Number& b) {
+        if (a.sign == '\0' && b.sign == '\0') {
+            a.value += b.value;
+        }
+        else if (a.sign == '\0' && b.sign == '-') {
+            if (a.value >= b.value) {
+                a.value -= b.value;
+            }
+            else {
+                a.value = b.value - a.value;
+                a.sign = '-';
+            }
+        }
+        else if (a.sign == '-' && b.sign == '\0') {
+            if (a.value >= b.value) {
+                a.value -= b.value;
+            }
+            else {
+                a.value = b.value - a.value;
+                a.sign = '\0';
+            }
+        }
+        else if (a.sign == '-' && b.sign == '-') {
+            a.value += b.value;
+            a.sign = '-';
+        }
+    }
 
-	addNumber(&fraction->numeric, temp.numeric);
-
-	reduceFraction(fraction);
-	
-	fraction->value = fraction->numeric.value * 1.0 / fraction->denominator.value;
-	absNumber(&fraction->numeric);
-	setSign(fraction);
-}
-
-void multiplyFraction(Fraction *fraction, Fraction factor)
-{
-	multiplyNumber(&fraction->numeric, factor.numeric);
-	multiplyNumber(&fraction->denominator, factor.denominator);
-
-	reduceFraction(fraction);
-
-	fraction->value *= factor.value;
-	setSign(fraction);
-}
-
-void multiplyFraction(Fraction* fraction, Number factor)
-{
-	Fraction temp = createFraction(factor, createNumber(1));
-	multiplyFraction(fraction, temp);
-}
-
-void divideFraction(Fraction* fraction, Fraction divider)
-{
-	Number temp = divider.numeric;
-	divider.numeric = divider.denominator;
-	divider.denominator = temp;
-
-	multiplyFraction(fraction, divider);
-}
-
-void divideFraction(Fraction* fraction, Number divider)
-{
-	Fraction temp = createFraction(divider, createNumber(1));
-	divideFraction(fraction, temp);
-}
-
-char getFractionSign(Fraction fraction)
-{
-	return fraction.sign;
-}
-
-void absFraction(Fraction* fraction)
-{
-	fraction->value = abs(fraction->value);
-	absNumber(&fraction->numeric);
-	absNumber(&fraction->denominator);
-	setSign(fraction);
-}
+    void multiplyNumber(Number& a, const Number& b) {
+        a.value *= b.value;
+        if (a.sign != b.sign) {
+            a.sign = '-';
+        }
+        else {
+            a.sign = '\0';
+        }
+    }
+};
